@@ -2,7 +2,7 @@
 # python webstreaming.py --ip 0.0.0.0 --port 8000
 
 # import the necessary packages
-from pyimagesearch.motion_detection import SingleMotionDetector
+# from pyimagesearch.motion_detection import SingleMotionDetector
 from imutils.video import VideoStream
 from flask import Response
 from flask import Flask
@@ -52,10 +52,10 @@ def detect_motion(frameCount, width = 800):
     path_sad = "sad/"
     path_neutral = "neutral/"
 
-    angry_latest = 100000+1
-    happy_latest = 100000 + 1
-    sad_latest = 100000 + 1
-    neutral_latest = 100000 + 1
+    angry_latest = 100000+60
+    happy_latest = 100000 + 60
+    sad_latest = 100000 + 60
+    neutral_latest = 100000 + 60
 
     # initialize the motion detector and the total number of frames
     # read thus far
@@ -144,24 +144,38 @@ def detect_motion(frameCount, width = 800):
         # lock
         with lock:
             if label == "angry":
-                outputFrame = cv2.imread(path_angry+"frame-"+str(angry_latest)[1:]+".jpg")
+                outputFrame = cv2.imread(path_angry + "frame-" + str(angry_latest)[1:] + ".jpg")
+                # outputFrame = cv2.imread("happy.jpeg")
                 outputFrame = imutils.resize(outputFrame, width=width)
                 angry_latest+=1
+
+                if angry_latest > 100459:
+                    angry_latest = 100060
             elif label == "neutral":
-                outputFrame = cv2.imread(path_angry + "frame-" + str(neutral_latest)[1:] + ".jpg")
-                outputFrame = cv2.imread("neutral.png")
+                outputFrame = cv2.imread(path_neutral + "frame-" + str(neutral_latest)[1:] + ".jpg")
+                # outputFrame = cv2.imread("happy.jpeg")
                 outputFrame = imutils.resize(outputFrame, width=width)
                 neutral_latest+=1
+
+                if neutral_latest > 100459:
+                    neutral_latest = 100060
             elif label == "happy":
-                outputFrame = cv2.imread(path_angry + "frame-" + str(happy_latest)[1:] + ".jpg")
-                outputFrame = cv2.imread("happy.jpeg")
+                # print(path_angry + "frame-" + str(happy_latest)[1:] + ".jpg")
+                outputFrame = cv2.imread(path_happy + "frame-" + str(happy_latest)[1:] + ".jpg")
+                # outputFrame = cv2.imread("happy.jpeg")
                 outputFrame = imutils.resize(outputFrame, width=width)
                 happy_latest+=1
+
+                if happy_latest > 100459:
+                    happy_latest = 100060
             elif label == "sad":
-                outputFrame = cv2.imread(path_angry + "frame-" + str(sad_latest)[1:] + ".jpg")
-                outputFrame = cv2.imread("sad.jpeg")
+                outputFrame = cv2.imread(path_sad + "frame-" + str(sad_latest)[1:] + ".jpg")
+                # outputFrame = cv2.imread("happy.jpeg")
                 outputFrame = imutils.resize(outputFrame, width=width)
                 sad_latest+=1
+
+                if sad_latest > 100459:
+                    sad_latest = 100060
 
 
             elif label == "scared":
@@ -216,10 +230,10 @@ def video_feed():
 if __name__ == '__main__':
     # construct the argument parser and parse command line arguments
     ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--ip", type=str, required=True,
-                    help="ip address of the device")
-    ap.add_argument("-o", "--port", type=int, required=True,
-                    help="ephemeral port number of the server (1024 to 65535)")
+    # ap.add_argument("-i", "--ip", type=str, required=True,
+    #                 help="ip address of the device")
+    # ap.add_argument("-o", "--port", type=int, required=True,
+    #                 help="ephemeral port number of the server (1024 to 65535)")
     ap.add_argument("-f", "--frame-count", type=int, default=100,
                     help="# of frames used to construct the background model")
     args = vars(ap.parse_args())
@@ -231,7 +245,9 @@ if __name__ == '__main__':
     t.start()
 
     # start the flask app
-    app.run(host=args["ip"], port=args["port"], debug=True,
+    # app.run(host=args["ip"], port=args["port"], debug=True,
+    #         threaded=True, use_reloader=False)
+    app.run(debug=True,
             threaded=True, use_reloader=False)
 
 # release the video stream pointer
