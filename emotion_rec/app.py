@@ -42,7 +42,7 @@ def index():
     return render_template("index.html")
 
 
-def detect_motion(frameCount, width = 800):
+def detect_emotion(frameCount, width = 800):
     # grab global references to the video stream, output frame, and
     # lock variables
     global vs, outputFrame, lock
@@ -63,7 +63,7 @@ def detect_motion(frameCount, width = 800):
 
     # parameters for loading data and images
     detection_model_path = 'haarcascade_files/haarcascade_frontalface_default.xml'
-    emotion_model_path = 'models/_mini_XCEPTION.102-0.66.hdf5'
+    emotion_model_path = 'models/_mini_XCEPTION.98-0.66.hdf5'
 
     # hyper-parameters for bounding boxes shape
     # loading models
@@ -234,12 +234,12 @@ if __name__ == '__main__':
     #                 help="ip address of the device")
     # ap.add_argument("-o", "--port", type=int, required=True,
     #                 help="ephemeral port number of the server (1024 to 65535)")
-    ap.add_argument("-f", "--frame-count", type=int, default=100,
+    ap.add_argument("-f", "--frame-count", type=int, default=70,
                     help="# of frames used to construct the background model")
     args = vars(ap.parse_args())
 
     # start a thread that will perform motion detection
-    t = threading.Thread(target=detect_motion, args=(
+    t = threading.Thread(target=detect_emotion, args=(
         args["frame_count"],))
     t.daemon = True
     t.start()
